@@ -1,0 +1,1 @@
+MUTANT_URI = "/mutant"

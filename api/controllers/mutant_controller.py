@@ -1,27 +1,42 @@
+import re
+
+
 class MutantController:
+
     MUTANT_SEQUENCE_SIZE = 4
+    MINIMUM_MUTANTS_SEQUENCES = 1
 
-    def __init__(self, dna):
-        self._dna = dna
-
-    def is_mutant(self):
+    def is_mutant(self, dna):
         is_mutant = False
-        sequences = self._decompose_dna()
+        self._validate_dna(dna)
+        sequences = self._decompose_dna(dna)
         count = self._count_mutant_sequences(sequences)
-        print("cantidad de mutantes: ", count)
-        if count > 1:
+        if count > self.MINIMUM_MUTANTS_SEQUENCES:
             is_mutant = True
         return is_mutant
 
-    def _decompose_dna(self):
+    def _validate_dna(self, dna):
+        is_valid = False
+        dna_size = len(dna)
+        for seq in dna:
+            if len(seq) != dna_size:
+                raise ValueError("The DNA sequence is corrupt")
+            x = re.findall("[^ATCG]", seq, re.IGNORECASE)
+            if x:
+                raise ValueError("The Nitrogen base corrupt")
+
+        return is_valid
+
+    def _decompose_dna(self, dna):
         sequences = []
-        sequences.extend(self._dna)
-        sequences.extend(self._decompose_vertically(self._dna))
-        sequences.extend(self._decompose_diagonally(self._dna))
-        sequences.extend(self._decompose_diagonally_but_backwards(self._dna))
+        sequences.extend(dna)
+        sequences.extend(self._decompose_vertically(dna))
+        sequences.extend(self._decompose_diagonally(dna))
+        sequences.extend(self._decompose_diagonally_but_backwards(dna))
         return sequences
 
-    def _decompose_vertically(self, dna):
+    @staticmethod
+    def _decompose_vertically(dna):
         dna_vertors_len = len(dna)
         vertical_sequences = []
         for i in range(dna_vertors_len):
