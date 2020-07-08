@@ -1,5 +1,5 @@
 from unittest import TestCase
-from api.controllers.mutant_controller import MutantController
+from api.controllers import MutantController
 
 
 class TestMutantController(TestCase):
@@ -151,3 +151,4 @@ class TestMutantController(TestCase):
         dna = ["ATGCGA", "CAGTGC", "TTGTCT", "AGAAKG", "CCACTA", "TCACTG"]
         with self.assertRaises(ValueError):
             mc._validate_dna(dna)
+

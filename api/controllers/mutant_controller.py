@@ -1,4 +1,6 @@
 import re
+from api.models import Dna
+import datetime
 
 
 class MutantController:
@@ -13,6 +15,13 @@ class MutantController:
         count = self._count_mutant_sequences(sequences)
         if count > self.MINIMUM_MUTANTS_SEQUENCES:
             is_mutant = True
+
+        dna_model = Dna()
+        dna_model.sequences = dna
+        dna_model.is_mutant = is_mutant
+        dna_model.created_date = datetime.datetime.now()
+        dna_model.updated_date = datetime.datetime.now()
+        dna_model.save()
         return is_mutant
 
     def _validate_dna(self, dna):
@@ -110,4 +119,35 @@ class MutantController:
                     found_base_count = 0
                 last_base = base
         return sequences_found
+
+    @staticmethod
+    def get_stats():
+        stats = Dna.get_stats()
+        count_mutant_dna = 0
+        count_human_dna = 0
+        for stat in stats:
+            if stat[0] == True:
+                count_mutant_dna = stat[1]
+            else:
+                count_human_dna = stat[1]
+
+        stats = {
+            "count_mutant_dna": count_mutant_dna,
+            "count_human_dna": count_human_dna,
+            "ratio": MutantController._calculate_ratio(count_mutant_dna, count_human_dna)
+        }
+
+        return stats
+
+    @staticmethod
+    def _calculate_ratio(mutant_count, human_count):
+        if human_count == 0 or human_count is None:
+            ratio = 1
+        elif mutant_count == 0 or mutant_count is None:
+            ratio = 0
+        else:
+            ratio = mutant_count / human_count
+        return ratio
+
+
 

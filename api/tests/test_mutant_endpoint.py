@@ -1,5 +1,5 @@
-import unittest
 from main import app
+import unittest
 import json
 from http import HTTPStatus
 from api.utils import uris
